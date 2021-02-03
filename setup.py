@@ -3,11 +3,17 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-setuptools.setup(
-    name="udemy_opensource_publisher",  # Replace with your own username
+setup_args = dict(
+    name="pywikigraph",
     version="0.0.1",
-    author="UdemyData",
+    author="Sam Cohan, Raka Dalal, UdemyData",
     author_email="raka.dalal@udemy.com",
+    keywords=[
+        "Graph Traversal",
+        "WikiGraph",
+        "Wikipedia Graph",
+        "Bidirectional Search",
+    ],
     description="Find connection between any two wikipedia topics",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -20,3 +26,8 @@ setuptools.setup(
     ],
     python_requires=">=3.4",
 )
+
+install_requires = ["scipy"]
+
+if __name__ == "__main__":
+    setuptools.setup(**setup_args, install_requires=install_requires)
