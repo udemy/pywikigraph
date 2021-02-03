@@ -5,9 +5,9 @@ Valid topics include bold and italic terms found in articles.
 
 import os
 import pickle
+import urllib.request
 from collections import defaultdict, deque
 from typing import Dict, List, Optional, Set, Tuple
-import urllib
 
 import scipy.sparse
 from scipy.sparse import csc_matrix, csr_matrix
