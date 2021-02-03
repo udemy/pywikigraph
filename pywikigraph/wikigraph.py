@@ -7,6 +7,7 @@ import os
 import pickle
 from collections import defaultdict, deque
 from typing import Dict, List, Optional, Set, Tuple
+import urllib
 
 import scipy.sparse
 from scipy.sparse import csc_matrix, csr_matrix
@@ -31,6 +32,7 @@ class WikiGraph:
                 affect the performance of directed searches so it is on by default.
                 (default: True)
         """
+        self.global_root = "http://s3.amazonaws.com/udemy-open-source/pywikigraph"
         self.data_root: str = data_root
         self._adj_matrix_directed_csr: Optional[csr_matrix] = None
         self._adj_matrix_directed_csc: Optional[csc_matrix] = None
@@ -44,6 +46,13 @@ class WikiGraph:
     def adj_matrix_directed_csr(self) -> Optional[csr_matrix]:
         """Directed adjacency matrix of Wikipedia topics in sparse CSR format."""
         if self._adj_matrix_directed_csr is None:
+            matrix_path = os.path.join(self.data_root, "wikigraph_directed_csr.npz")
+            if not os.path.exists(matrix_path):
+                print("Downloading wikigraph_directed_csr.npz")
+                urllib.request.urlretrieve(
+                    os.path.join(self.global_root, "wikigraph_directed_csr.npz"),
+                    matrix_path,
+                )
             self._adj_matrix_directed_csr = scipy.sparse.load_npz(
                 os.path.join(self.data_root, "wikigraph_directed_csr.npz")
             )
@@ -81,6 +90,13 @@ class WikiGraph:
     def topic_index_map(self) -> Dict[str, int]:
         """Dictionary mapping from topic to index in adjacency matrices."""
         if self._topic_index_map is None:
+            dictionary_path = os.path.join(self.data_root, "index.pkl")
+            if not os.path.exists(dictionary_path):
+                print("Downloading index.pkl")
+                urllib.request.urlretrieve(
+                    os.path.join(self.global_root, "index.pkl"),
+                    dictionary_path,
+                )
             with open(os.path.join(self.data_root, "index.pkl"), "rb") as f:
                 self._topic_index_map = pickle.load(f)
             self._index_topic_map = None
