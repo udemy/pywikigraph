@@ -1,6 +1,6 @@
 # pywikigraph
 
-pywikigraph helps you determine the relationship between any two wikipedia articles, bold or italic terms. It tells you how closely they are connected to other (degree of separation) and also the exact paths between them. You have the option to specify whether you want to use a directed graph or an undirected graph.
+pywikigraph helps you determine the relationship between any two wikipedia articles, bold or italic terms. It tells you how closely they are connected to other (degree of separation) and also the exact shortest paths between them. You have the option to specify whether you want to use a directed graph or an undirected graph.
 
 To learn more about this project and/or its use cases, please take a look at this [blog](https://medium.com/udemy-engineering/fast-wikipedia-traversal-algorithm-and-its-applications-in-nlp-and-keyphrase-extraction-9d6ff4c4a68b).
 
@@ -17,7 +17,7 @@ The first time you use the package, data will be automatically downloaded in you
 How to use the package:
 ------------------------
 ```python
->>> from wikigraph import WikiGraph
+>>> from pywikigraph import WikiGraph
 >>> wg = WikiGraph(path_to_data)
 ```
 Here `path_to_data` refers to the path you want the data to be downloaded or the path containing the files the `index.pkl` and `wikigraph_directed_csr.npz` in case you manually downloaded them.
