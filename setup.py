@@ -6,8 +6,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup_args = dict(
     name="pywikigraph",
     version="0.0.1",
-    author="Sam Cohan, Raka Dalal, UdemyData",
-    author_email="raka.dalal@udemy.com",
+    author="Udemy, Raka Dalal, Sam Cohan",
+    author_email="opensource@udemy.com",
     keywords=[
         "Graph Traversal",
         "WikiGraph",
