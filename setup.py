@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup_args = dict(
     name="pywikigraph",
-    version="0.0.1",
+    version="0.0.2",
     author="Udemy, Raka Dalal, Sam Cohan",
     author_email="opensource@udemy.com",
     keywords=[

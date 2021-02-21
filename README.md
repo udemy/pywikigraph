@@ -10,17 +10,22 @@ How to install the package:
 
 How to get the data:
 -------------------------
-The first time you use the package, data will be automatically downloaded in your specified path. In case, you want to download the data manually. There are two files that needs to be downloaded:
-- [wikigraph_directed_csr.npz](http://s3.amazonaws.com/udemy-open-source/pywikigraph/wikigraph_directed_csr.npz)
-- [index.pkl](http://s3.amazonaws.com/udemy-open-source/pywikigraph/index.pkl)
+This package requires two data files to work. These files take about 1.68 GB on disk and about 8.1 GB in memory. They will be lazily downloaded from s3 to your machine and loaded into memory on your first call to get shortest paths.
+
+The two files are linked below:
+- [wikigraph_directed_csr.npz](http://s3.amazonaws.com/udemy-open-source/pywikigraph/wikigraph_directed_csr.npz): a sparse array of directed topic connections.
+- [index.pkl](http://s3.amazonaws.com/udemy-open-source/pywikigraph/index.pkl): a pickle file with mappings from topic to index in the sparse matrix.
+
+Note that if you do not specify a data path, the data files will be downloaded to `~/.pywikigraph`.
+
 
 How to use the package:
 ------------------------
 ```python
 >>> from pywikigraph import WikiGraph
->>> wg = WikiGraph(path_to_data)
+>>> wg = WikiGraph()
 ```
-Here `path_to_data` refers to the path you want the data to be downloaded or the path containing the files the `index.pkl` and `wikigraph_directed_csr.npz` in case you manually downloaded them.
+Note that by default, the data will be downloaded from s3 and loaded to memory from `~/.pywikigraph` folder on your machine, but you can override this path via the `data_root` parameter at initialization. The instantiation will always be instant as the data download and load-to-memory are done lazily. This means that your first ever call to get shortest paths will take several minutes to download the files and load them into memory. Also, since the files are relatively large (1.68 GB on disk and 8.1 GB in memory), your first call to a newly instantiated  `WikiGraph` object will always take some time to load the files from disk to memory (about 70 seconds on a MacBook Pro with 2.6Ghz CPU and 16 GB RAM). All subsequent calls should be extremely fast though.
 
 To find the degree of separation and the shortest paths between two inputs - *Backpropagation* and *Data Science*:
 ```python
@@ -31,6 +36,8 @@ To find the degree of separation and the shortest paths between two inputs - *Ba
 - First element of tuple indicates degree of separation
 - Second element of tuple indicates number of shortest paths
 - Third element of tuple is a list of exact paths
+
+Again, be prepared for your first ever call to take several minutes to download the data files and load them into memory. If the files are already downloaded, the first call would still take upwards of a minute on most machines to load them into memory. All subsequent calls will be lightning fast though.
 
 If you only care about the number of paths, then you can pass argument `no_paths` and the resulting tuple will just have a None for the paths element.
 ```python
