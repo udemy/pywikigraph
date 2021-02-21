@@ -13,6 +13,9 @@ import scipy.sparse
 from scipy.sparse import csc_matrix, csr_matrix
 
 
+S3_DATA_ROOT = "http://s3.amazonaws.com/udemy-open-source/pywikigraph"
+
+
 class WikiGraph:
     """
     This module takes as input a source and target wikipage and finds all possible
@@ -27,13 +30,15 @@ class WikiGraph:
                 `wikigraph_directed_csr.npz`: Directed adjacency matrix (sparse CSR
                 format).
                 `index.pkl`: Mapping from topic to index in sparse matrix.
+                If not provided, will default to `~/.pywikigraph`
             optimize_memory: Whether to trade off about 10% performance in undirected
                 searches in exchange for using 2/3 the memory. Note, this does not
                 affect the performance of directed searches so it is on by default.
                 (default: True)
         """
-        self.global_root = "http://s3.amazonaws.com/udemy-open-source/pywikigraph"
-        self.data_root: str = data_root
+        self._data_root: str = data_root or os.path.join(
+            os.path.expanduser("~"), ".pywikigraph"
+        )
         self._adj_matrix_directed_csr: Optional[csr_matrix] = None
         self._adj_matrix_directed_csc: Optional[csc_matrix] = None
         self._adj_matrix_undirected_csr: Optional[csr_matrix] = None
@@ -43,19 +48,26 @@ class WikiGraph:
         self._index_topic_map: Optional[Dict[int, str]] = None
 
     @property
+    def data_root(self):
+        return self._data_root
+
+    @property
     def adj_matrix_directed_csr(self) -> Optional[csr_matrix]:
         """Directed adjacency matrix of Wikipedia topics in sparse CSR format."""
         if self._adj_matrix_directed_csr is None:
             matrix_path = os.path.join(self.data_root, "wikigraph_directed_csr.npz")
             if not os.path.exists(matrix_path):
-                print("Downloading wikigraph_directed_csr.npz")
+                print(
+                    "Downloading wikigraph_directed_csr.npz..."
+                    " (may take several minutes as it is 680 MBs)"
+                )
+                os.makedirs(self.data_root, exist_ok=True)
                 urllib.request.urlretrieve(
-                    os.path.join(self.global_root, "wikigraph_directed_csr.npz"),
+                    os.path.join(S3_DATA_ROOT, "wikigraph_directed_csr.npz"),
                     matrix_path,
                 )
-            self._adj_matrix_directed_csr = scipy.sparse.load_npz(
-                os.path.join(self.data_root, "wikigraph_directed_csr.npz")
-            )
+            print(f"Loading {matrix_path} to memory...")
+            self._adj_matrix_directed_csr = scipy.sparse.load_npz(matrix_path)
             self._adj_matrix_directed_csc = None
             self._adj_matrix_undirected_csr = None
             self._adj_matrix_undirected_csc = None
@@ -90,15 +102,18 @@ class WikiGraph:
     def topic_index_map(self) -> Dict[str, int]:
         """Dictionary mapping from topic to index in adjacency matrices."""
         if self._topic_index_map is None:
-            dictionary_path = os.path.join(self.data_root, "index.pkl")
-            if not os.path.exists(dictionary_path):
-                print("Downloading index.pkl")
-                urllib.request.urlretrieve(
-                    os.path.join(self.global_root, "index.pkl"),
-                    dictionary_path,
+            index_path = os.path.join(self.data_root, "index.pkl")
+            if not os.path.exists(index_path):
+                os.makedirs(self.data_root, exist_ok=True)
+                print(
+                    "Downloading index.pkl... (may take several minutes as it is 1 GB)"
                 )
-            with open(os.path.join(self.data_root, "index.pkl"), "rb") as f:
-                self._topic_index_map = pickle.load(f)
+                urllib.request.urlretrieve(
+                    os.path.join(S3_DATA_ROOT, "index.pkl"),
+                    index_path,
+                )
+            print(f"Loading {index_path} to memory...")
+            self._topic_index_map = pickle.load(open(index_path, "rb"))
             self._index_topic_map = None
         return self._topic_index_map
 
